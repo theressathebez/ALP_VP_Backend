@@ -13,4 +13,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique @db.VarChar(255)
+  telepon  String @db.VarChar(20)
+  username String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
 
+  userVideos       UserVideo[]
+  savedTranscripts SavedTranscript[]
+  userQuizAnswers  UserQuizAnswer[]
+
+  @@map("users")
+}
+
+model UserVideo {
+  id       Int @id @default(autoincrement())
+  user_id  Int
+  video_id Int
+
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [video_id], references: [id], onDelete: Cascade)
+
+  @@map("user_videos")
+}
+
+model Video {
+  id         Int    @id @default(autoincrement())
+  video_name String @db.VarChar(255)
+  video_url  String @db.Text
+  flashcard  String @db.Text
+  topic_id   Int
+
+  topic        Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  userVideos   UserVideo[]
+  QuizQuestion QuizQuestion[]
+
+  @@map("videos")
+}
+
+model Topic {
+  id         Int    @id @default(autoincrement())
+  topic_name String @db.VarChar(255)
+
+  videos  Video[]
+  quizzes Quiz[]
+
+  @@map("topics")
+}
+
+model Quiz {
+  id        Int    @id @default(autoincrement())
+  quiz_name String @db.VarChar(255)
+  topic_id  Int
+
+  topic     Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id       Int    @id @default(autoincrement())
+  question String @db.Text
+  quiz_id  Int
+  video_id Int
+
+  quiz    Quiz         @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  video   Video        @relation(fields: [video_id], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@map("quiz_questions")
+}
+
+model QuizAnswer {
+  id          Int     @id @default(autoincrement())
+  is_correct  Boolean
+  option      String  @db.Text
+  question_id Int
+
+  question    QuizQuestion     @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  userAnswers UserQuizAnswer[]
+
+  @@map("quiz_answers")
+}
+
+model UserQuizAnswer {
+  id             Int @id @default(autoincrement())
+  user_id        Int
+  quiz_answer_id Int
+
+  user       User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  quizAnswer QuizAnswer @relation(fields: [quiz_answer_id], references: [id], onDelete: Cascade)
+
+  @@map("user_quiz_answers")
+}
+
+model SavedTranscript {
+  id              Int    @id @default(autoincrement())
+  transcript_text String @db.Text
+  user_id         Int
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("saved_transcripts")
+}
