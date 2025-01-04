@@ -3,7 +3,7 @@ import { ResponseError } from "../errors/response-error";
 import { LoginUser, RegisterUser } from "../models/user-model";
 import { UserValidation } from "../validations/user-validation";
 import { Validation } from "../validations/validation";
-import bcry pt from "bcrypt"
+import bcrypt from "bcrypt"
 
 
 export class UserService {
