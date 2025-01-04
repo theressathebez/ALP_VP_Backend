@@ -1,11 +1,28 @@
 import { Request, Response, NextFunction } from "express";
 import { SavedTranscriptService } from "../services/savedTranscript-service";
 import { CreateSavedTranscript } from "../models/savedTranscript-model";
+import { prismaClient } from "../application/database";
+import { ResponseError } from "../errors/response-error";
+import { UserRequest } from "../type/user-request";
 
 export class SavedTranscriptController {
-    static async create(req: Request, res: Response, next: NextFunction) {
+    static async create(req: UserRequest, res: Response, next: NextFunction) {
         try {
-            const request: CreateSavedTranscript = req.body;
+            const userId = req.user?.id; // Assuming you have user information in req.user
+
+            // Check if the user exists
+            const user = await prismaClient.user.findUnique({
+                where: { id: userId }
+            });
+
+            if (!user) {
+                throw new ResponseError(404, "User not found");
+            }
+
+            const request: CreateSavedTranscript = {
+                ...req.body,
+                user_id: userId
+            };
             const response = await SavedTranscriptService.create(request);
             res.status(201).json({ data: response });
         } catch (error) {
@@ -13,7 +30,9 @@ export class SavedTranscriptController {
         }
     }
 
-    static async getById(req: Request, res: Response, next: NextFunction) {
+    // Other methods...
+
+    static async getById(req: UserRequest, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
             const response = await SavedTranscriptService.getById(id);
@@ -23,7 +42,7 @@ export class SavedTranscriptController {
         }
     }
 
-    static async update(req: Request, res: Response, next: NextFunction) {
+    static async update(req: UserRequest, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
             const request: CreateSavedTranscript = req.body;
@@ -34,7 +53,7 @@ export class SavedTranscriptController {
         }
     }
 
-    static async delete(req: Request, res: Response, next: NextFunction) {
+    static async delete(req: UserRequest, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
             await SavedTranscriptService.delete(id);
@@ -44,7 +63,7 @@ export class SavedTranscriptController {
         }
     }
 
-    static async getAllByUserId(req: Request, res: Response, next: NextFunction) {
+    static async getAllByUserId(req: UserRequest, res: Response, next: NextFunction) {
         try {
             const userId = parseInt(req.params.userId);
             const response = await SavedTranscriptService.getAllByUserId(userId);
