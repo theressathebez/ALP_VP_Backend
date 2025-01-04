@@ -13,7 +13,7 @@ export const errorMiddleware = async (
             errorMessage: `Validation error: ${JSON.stringify(error.message)}`,
         })
     } else if (error instanceof ResponseError) {
-        res.status(400).json({
+        res.status(error.status).json({
             errorMessage: error.message,
         })
     } else {

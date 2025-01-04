@@ -1,13 +1,13 @@
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../errors/response-error";
-import { LoginUser, RegisterUser } from "../models/user-model";
+import { LoginUser, RegisterUser, toUserResponse, UserResponse } from "../models/user-model";
 import { UserValidation } from "../validations/user-validation";
 import { Validation } from "../validations/validation";
-import bcry pt from "bcrypt"
+import bcrypt from "bcrypt"
 
 
 export class UserService {
-    static async register(request: RegisterUser) {
+    static async register(request: RegisterUser): Promise<UserResponse> {
         const registerRequest = Validation.validate(
             UserValidation.REGISTER,
             request
@@ -35,9 +35,11 @@ export class UserService {
                 password: registerRequest.password
             }
         })
+
+        return toUserResponse(user)
     }
 
-    static async login(request: LoginUser) {
+    static async login(request: LoginUser): Promise<string> {
         const loginRequest = Validation.validate(
             UserValidation.LOGIN, 
             request)
@@ -45,7 +47,7 @@ export class UserService {
         let user = await prismaClient.user.findFirst({
             where: {
                 email: loginRequest.email,
-            },
+            }
         })
 
         if (!user) {
@@ -61,5 +63,6 @@ export class UserService {
             throw new ResponseError(400, "Invalid email or password!")
         }
 
+        return "Login Successfully!"
     }
 }

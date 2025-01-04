@@ -2,7 +2,6 @@
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "email" VARCHAR(255) NOT NULL,
-    "telepon" VARCHAR(20) NOT NULL,
     "username" VARCHAR(100) NOT NULL,
     "password" VARCHAR(100) NOT NULL,
 
