@@ -1,34 +1,47 @@
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../errors/response-error";
-// import { RegisterUserRequest, toUserResponse, UserResponse } from "../models/study-model";
+import { CreateTopicRequest, CreateVideoRequest, TopicResponse, toTopicResponse, toVideoResponse, VideoResponse } from "../models/study-model";
 import { StudyValidation } from "../validations/study-validation";
 import { Validation } from "../validations/validation";
 
 export class StudyService {
 
-    // static async register(req: RegisterUserRequest): Promise<UserResponse> {
-    //     //validate request
-    //     const registerReq = Validation.validate(
-    //         StudyValidation.CREATE,
-    //         req
-    //     )
+    static async createTopic(req: CreateTopicRequest): Promise<TopicResponse> {
+        //validate request
+        const validRequest = Validation.validate(
+            StudyValidation.CREATE_TOPIC,
+            req
+        )
 
-    //     //error handling
-    //     const existingUser = await prismaClient.mahasiswa.findUnique({
-    //         where: { nim: registerReq.nim },
-    //     });
-    //     if (existingUser) {
-    //         throw new ResponseError(409, `User with NIM ${registerReq.nim} already exists.`);
-    //     }
+        // Simpan ke database
+        const topic = await prismaClient.topic.create({
+            data: { topic_name: validRequest.topicName },
+        });
 
-    //     const mahasiswa = await prismaClient.mahasiswa.create({
-    //         data: {
-    //             nama: registerReq.nama,
-    //             nim: registerReq.nim,
-    //             mataKuliahId: registerReq.mataKuliahId
-    //         }
-    //     })
+        return toTopicResponse(topic);
+    }
 
-    //     return toUserResponse(mahasiswa)
-    // }
+    static async createVideo(request: CreateVideoRequest): Promise<VideoResponse> {
+        // Validasi request
+        const validRequest = Validation.validate(StudyValidation.CREATE_VIDEO, request);
+
+        // Simpan ke database
+        const video = await prismaClient.video.create({
+            data: {
+                video_name: validRequest.videoName,
+                video_url: validRequest.videoUrl,
+                flashcard: validRequest.flashcard || "",
+                topic_id: validRequest.topicId,
+            },
+        });
+
+        return toVideoResponse(video);
+    }
+
+    static async getTopics(): Promise<TopicResponse[]> {
+        const topics = await prismaClient.topic.findMany(); 
+        
+        return topics.map(toTopicResponse); 
+    }
+    
 }
