@@ -41,4 +41,45 @@ export class UserController {
             next(error)
         }
     }
+
+    static async saveVideo(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = parseInt(req.params.userId); // Menyesuaikan ID pengguna yang login
+            const videoId = parseInt(req.params.videoId); // ID video yang disimpan
+            await UserService.saveVideoToUser(userId, videoId);
+            res.status(200).json({ message: "Video saved successfully" });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getUserVideos(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = parseInt(req.params.userId);
+            const videos = await UserService.getUserVideos(userId);
+            res.status(200).json({ data: videos });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async deleteUserVideo(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = parseInt(req.params.userId);
+            const videoId = parseInt(req.params.videoId);
+
+            if (isNaN(userId) || isNaN(videoId)) {
+                res.status(400).json({ message: "Invalid userId or videoId" });
+                return;
+            }
+
+            const response = await UserService.deleteUserVideo(userId, videoId);
+
+            res.status(200).json({
+                message: response,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
