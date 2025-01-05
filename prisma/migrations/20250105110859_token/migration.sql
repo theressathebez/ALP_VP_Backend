@@ -4,18 +4,18 @@ CREATE TABLE "users" (
     "email" VARCHAR(255) NOT NULL,
     "username" VARCHAR(100) NOT NULL,
     "password" VARCHAR(100) NOT NULL,
+    "token" VARCHAR(100),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "user_videos" (
+CREATE TABLE "UserVideo" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "video_id" INTEGER NOT NULL,
-    "saved_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "user_videos_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "UserVideo_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -90,11 +90,14 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
--- AddForeignKey
-ALTER TABLE "user_videos" ADD CONSTRAINT "user_videos_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "UserVideo_user_id_video_id_key" ON "UserVideo"("user_id", "video_id");
 
 -- AddForeignKey
-ALTER TABLE "user_videos" ADD CONSTRAINT "user_videos_video_id_fkey" FOREIGN KEY ("video_id") REFERENCES "videos"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "UserVideo" ADD CONSTRAINT "UserVideo_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserVideo" ADD CONSTRAINT "UserVideo_video_id_fkey" FOREIGN KEY ("video_id") REFERENCES "videos"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "videos" ADD CONSTRAINT "videos_topic_id_fkey" FOREIGN KEY ("topic_id") REFERENCES "topics"("id") ON DELETE CASCADE ON UPDATE CASCADE;
