@@ -10,9 +10,9 @@ export const protectedRouter = express.Router()
 // protectedRouter.delete("/api/logout", AuthController.logout)
 
 //user
-protectedRouter.post("/users/:userId/videos/:videoId", UserController.saveVideo);
-protectedRouter.get("/users/:userId/videos", UserController.getUserVideos)
-protectedRouter.delete("/users/:userId/videos/:videoId", UserController.deleteUserVideo);
+protectedRouter.post("/api/users/:userId/videos/:videoId", UserController.saveVideo);
+protectedRouter.get("/api/users/:userId/videos", UserController.getUserVideos)
+protectedRouter.delete("/api/users/:userId/videos/:videoId", UserController.deleteUserVideo);
 
 //study
 protectedRouter.post("/api/addTopic", StudyController.addTopic)
