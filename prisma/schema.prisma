@@ -34,7 +34,7 @@ model UserVideo {
   user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
   video Video @relation(fields: [video_id], references: [id], onDelete: Cascade)
 
-  @@map("user_videos")
+  @@unique([user_id, video_id])
 }
 
 model Video {

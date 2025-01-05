@@ -13,6 +13,7 @@ CREATE TABLE "user_videos" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "video_id" INTEGER NOT NULL,
+    "saved_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "user_videos_pkey" PRIMARY KEY ("id")
 );

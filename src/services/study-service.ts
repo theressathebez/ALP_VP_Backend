@@ -63,6 +63,32 @@ export class StudyService {
         await prismaClient.video.delete({ where: { id: videoId } });
     }
     
+    static async updateTopic(topicId: number, req: CreateTopicRequest): Promise<TopicResponse> {
+        //partial() agar semua properti di validasi jadi opsional, jadi ga perlu kirim semua datanya
+        const updateReq = Validation.validate(
+            StudyValidation.UPDATE_TOPIC,
+            req
+        );
+        
+         // Cari topic berdasarkan ID
+        const topic = await prismaClient.topic.findUnique({ 
+            where: { id: topicId } 
+        });
+
+        if (!topic) {
+            throw new ResponseError(404, "Topic not found");
+        }
+    
+        const updatedTopic = await prismaClient.topic.update({
+            where: { id: topicId },
+            data: {
+                topic_name: updateReq.topicName ?? topic.topic_name
+            },
+        });
+    
+        return toTopicResponse(updatedTopic);
+    }
+
     static async updateVideo(videoId: number, req: CreateVideoRequest): Promise<VideoResponse> {
         //partial() agar semua properti di validasi jadi opsional, jadi ga perlu kirim semua datanya
         const updateReq = Validation.validate(
@@ -90,6 +116,5 @@ export class StudyService {
     
         return toVideoResponse(updatedVideo);
     }
-    
     
 }

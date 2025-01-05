@@ -2,11 +2,17 @@ import express from "express"
 // import { authMiddleware } from "../middlewares/auth-middleware"
 import { StudyController } from "../controllers/study-controller"
 import { SavedTranscriptController } from "../controllers/savedTranscript-controller"
+import { UserController } from "../controllers/user-controller";
 
 export const protectedRouter = express.Router()
 // protectedRouter.use(authMiddleware)
 
 // protectedRouter.delete("/api/logout", AuthController.logout)
+
+//user
+protectedRouter.post("/users/:userId/videos/:videoId", UserController.saveVideo);
+protectedRouter.get("/users/:userId/videos", UserController.getUserVideos)
+protectedRouter.delete("/users/:userId/videos/:videoId", UserController.deleteUserVideo);
 
 //study
 protectedRouter.post("/api/addTopic", StudyController.addTopic)
@@ -14,6 +20,7 @@ protectedRouter.post("/api/addVideo", StudyController.createVideo)
 protectedRouter.get("/api/getTopic", StudyController.getTopics)
 protectedRouter.get("/api/getVideos/:topicId", StudyController.getVideosByTopic);
 protectedRouter.delete("/api/videos/:videoId", StudyController.deleteVideo);
+protectedRouter.put("/api/topics/:topicId", StudyController.updateTopic);
 protectedRouter.put("/api/videos/:videoId", StudyController.updateVideo);
 
 //transcript

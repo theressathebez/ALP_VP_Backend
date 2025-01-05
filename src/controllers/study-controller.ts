@@ -57,6 +57,26 @@ export class StudyController {
         }
     }
 
+    static async updateTopic(req: Request, res: Response, next: NextFunction) {
+        try {
+            const topicId = parseInt(req.params.topicId); // Parse topic ID dari URL
+            const request: CreateTopicRequest = req.body; // Parse body untuk data update
+
+            if (isNaN(topicId)) {
+                throw new ResponseError(400, "Invalid topic ID");
+            }
+
+            const response = await StudyService.updateTopic(topicId, request);
+
+            res.status(200).json({
+                message: `Topic dengan ID ${topicId} berhasil diperbarui.`,
+                data: response,
+            });
+        } catch (error) {
+            next(error); // Pass error ke middleware
+        }
+    }
+
     static async updateVideo(req: Request, res: Response, next: NextFunction) {
         try {
             const videoId = parseInt(req.params.videoId); // Parse video ID dari URL

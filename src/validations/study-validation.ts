@@ -15,6 +15,10 @@ export class StudyValidation {
         topicId: z.number().positive(),
     })
 
+    static readonly UPDATE_TOPIC: ZodType = z.object({
+        topicName: z.string().min(1).max(100).optional()
+    }).partial();
+
     static readonly UPDATE_VIDEO: ZodType = z.object({
         videoName: z.string().min(1).max(100).optional(),
         videoUrl: z
