@@ -6,10 +6,21 @@ export interface RegisterUser {
     password: string
 }
 
-export interface LoginUser {
-    id: number
-    email: string
+export interface UserResponse {
+    token?: string
     username: string
+}
+
+export interface LoginUser {
+    email: string
     password: string
+}
+
+export function toUserResponse(prismaUser: User): UserResponse {
+    return {
+        token: prismaUser.token ?? "",
+        username: prismaUser.username
+    }
+    
 }
 
