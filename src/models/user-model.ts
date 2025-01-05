@@ -7,18 +7,18 @@ export interface RegisterUser {
 }
 
 export interface UserResponse {
+    token?: string
     username: string
 }
 
 export interface LoginUser {
-    id: number
     email: string
-    username: string
     password: string
 }
 
 export function toUserResponse(prismaUser: User): UserResponse {
     return {
+        token: prismaUser.token ?? "",
         username: prismaUser.username
     }
     

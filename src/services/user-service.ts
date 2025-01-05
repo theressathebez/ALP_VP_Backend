@@ -1,10 +1,12 @@
 import { Video } from "@prisma/client";
+import { User } from "@prisma/client";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../errors/response-error";
 import { LoginUser, RegisterUser, toUserResponse, UserResponse } from "../models/user-model";
 import { UserValidation } from "../validations/user-validation";
 import { Validation } from "../validations/validation";
 import bcrypt from "bcrypt"
+import { v4 as uuid } from "uuid";
 
 
 export class UserService {
@@ -33,14 +35,15 @@ export class UserService {
             data: {
                 email: registerRequest.email,
                 username: registerRequest.username,
-                password: registerRequest.password
+                password: registerRequest.password,
+                token: uuid()
             }
         })
 
         return toUserResponse(user)
     }
 
-    static async login(request: LoginUser): Promise<string> {
+    static async login(request: LoginUser): Promise<UserResponse> {
         const loginRequest = Validation.validate(
             UserValidation.LOGIN,
             request)
@@ -52,7 +55,7 @@ export class UserService {
         })
 
         if (!user) {
-            throw new ResponseError(400, "Invalid email or password!")
+            throw new ResponseError(400, "Invalid email!")
         }
 
         const passwordIsValid = await bcrypt.compare(
@@ -61,10 +64,34 @@ export class UserService {
         )
 
         if (!passwordIsValid) {
-            throw new ResponseError(400, "Invalid email or password!")
+            throw new ResponseError(400, "Invalid password!")
         }
 
-        return "Login Successfully!"
+        user = await prismaClient.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                token: uuid(),
+            },
+        })
+
+        const response = toUserResponse(user)
+
+        return response
+    }
+
+    static async logout(user: User): Promise<string> {
+            const result = await prismaClient.user.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    token: null
+                }
+            })
+
+        return "Logout Successfully!"
     }
 
     static async saveVideoToUser(userId: number, videoId: number): Promise<void> {

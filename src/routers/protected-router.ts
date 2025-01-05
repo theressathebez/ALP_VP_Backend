@@ -1,12 +1,13 @@
 import express from "express"
-// import { authMiddleware } from "../middlewares/auth-middleware"
+import { authMiddleware } from "../middlewares/auth-middleware"
 import { StudyController } from "../controllers/study-controller"
 import { SavedTranscriptController } from "../controllers/savedTranscript-controller"
-import { UserController } from "../controllers/user-controller";
+import { UserController } from "../controllers/user-controller"
 
 export const protectedRouter = express.Router()
-// protectedRouter.use(authMiddleware)
+protectedRouter.use(authMiddleware)
 
+protectedRouter.post("/api/logout", UserController.logout)
 // protectedRouter.delete("/api/logout", AuthController.logout)
 
 //user
