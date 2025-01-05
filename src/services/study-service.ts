@@ -21,9 +21,9 @@ export class StudyService {
         return toTopicResponse(topic);
     }
 
-    static async createVideo(request: CreateVideoRequest): Promise<VideoResponse> {
+    static async createVideo(req: CreateVideoRequest): Promise<VideoResponse> {
         // Validasi request
-        const validRequest = Validation.validate(StudyValidation.CREATE_VIDEO, request);
+        const validRequest = Validation.validate(StudyValidation.CREATE_VIDEO, req);
 
         // Simpan ke database
         const video = await prismaClient.video.create({
@@ -43,5 +43,53 @@ export class StudyService {
         
         return topics.map(toTopicResponse); 
     }
+
+    static async getVideosByTopic(topicId: number): Promise<VideoResponse[]> {
+        // Cari video berdasarkan topicId
+        const videos = await prismaClient.video.findMany({
+            where: {
+                topic_id: topicId,
+            },
+        });
+    
+        return videos.map(toVideoResponse); 
+    }
+
+    static async deleteVideo(videoId: number): Promise<void> {
+        const video = await prismaClient.video.findUnique({ where: { id: videoId } });
+        if (!video) {
+            throw new ResponseError(404, "Video not found");
+        }
+        await prismaClient.video.delete({ where: { id: videoId } });
+    }
+    
+    static async updateVideo(videoId: number, req: CreateVideoRequest): Promise<VideoResponse> {
+        //partial() agar semua properti di validasi jadi opsional, jadi ga perlu kirim semua datanya
+        const updateReq = Validation.validate(
+            StudyValidation.UPDATE_VIDEO,
+            req
+        );
+        
+        const video = await prismaClient.video.findUnique({ 
+            where: { id: videoId } 
+        });
+
+        if (!video) {
+            throw new ResponseError(404, "Video not found");
+        }
+    
+        const updatedVideo = await prismaClient.video.update({
+            where: { id: videoId },
+            data: {
+                video_name: updateReq.videoName ?? video.video_name,
+                video_url: updateReq.videoUrl ?? video.video_url,
+                flashcard: updateReq.flashcard ?? video.flashcard,
+                topic_id: updateReq.topicId ?? video.topic_id,
+            },
+        });
+    
+        return toVideoResponse(updatedVideo);
+    }
+    
     
 }

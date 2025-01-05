@@ -11,8 +11,19 @@ export class StudyValidation {
             .string()
             .url("Invalid URL format.")
             .max(200),
-        flashcard: z.string().optional(), 
+        flashcard: z.string().min(1).max(100).optional(),
         topicId: z.number().positive(),
     })
+
+    static readonly UPDATE_VIDEO: ZodType = z.object({
+        videoName: z.string().min(1).max(100).optional(),
+        videoUrl: z
+            .string()
+            .url("Invalid URL format.")
+            .max(200)
+            .optional(),
+        flashcard: z.string().min(1).max(100).optional(),
+        topicId: z.number().positive().optional(),
+    }).partial();
 }
 
