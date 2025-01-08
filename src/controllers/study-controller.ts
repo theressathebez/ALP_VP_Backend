@@ -1,9 +1,20 @@
 import { NextFunction, Response, Request } from "express"
-import { CreateTopicRequest, CreateVideoRequest, TopicResponse, VideoResponse } from "../models/study-model";
+import { CreateCategoryRequest, CreateTopicRequest, CreateVideoRequest, TopicResponse, VideoResponse } from "../models/study-model";
 import { StudyService } from "../services/study-service"
 import { ResponseError } from "../errors/response-error";
 
 export class StudyController {
+
+    static async createCategory(req: Request, res: Response, next: NextFunction) {
+        try {
+            const request: CreateCategoryRequest = req.body;
+            const response = await StudyService.createCategory(request);
+            res.status(201).json(response);
+        } catch (error) {
+            next(error); // Pass error to middleware
+        }
+    }
+
     static async addTopic(req: Request, res: Response, next: NextFunction) {
         try {
             const request: CreateTopicRequest = req.body as CreateTopicRequest; // Parse request body
@@ -24,9 +35,23 @@ export class StudyController {
         }
     }
 
-    static async getTopics(req: Request, res: Response, next: NextFunction) {
+    static async getCategories(req: Request, res: Response, next: NextFunction) {
         try {
-            const topics = await StudyService.getTopics(); // Retrieve topics using service
+            const response = await StudyService.getCategories();
+            res.status(200).json(response);
+        } catch (error) {
+            next(error); // Pass error to middleware
+        }
+    }
+
+    static async getTopicsByCategory(req: Request, res: Response, next: NextFunction) {
+        try {
+            const categoryId = parseInt(req.params.categoryId); // Get categoryId from URL parameters
+            if (isNaN(categoryId)) {
+                throw new ResponseError(400, "Invalid category ID");
+            }
+    
+            const topics = await StudyService.getTopicsByCategory(categoryId); // Call service method to get topics by category
             res.status(200).json({ data: topics }); // Send response
         } catch (error) {
             next(error); // Pass error to middleware
@@ -46,6 +71,21 @@ export class StudyController {
             next(error); // Pass error ke middleware
         }
     }
+
+    static async getVideo(req: Request, res: Response, next: NextFunction) {
+        try {
+            const videoId = parseInt(req.params.videoId); // Get videoId from URL parameters
+            if (isNaN(videoId)) {
+                throw new ResponseError(400, "Invalid video ID");
+            }
+    
+            const video = await StudyService.getVideo(videoId); // Fetch the video by ID from the service
+            res.status(200).json({ data: video }); // Send the response
+        } catch (error) {
+            next(error); // Pass error to middleware
+        }
+    }
+    
 
     static async deleteVideo(req: Request, res: Response, next: NextFunction) {
         try {

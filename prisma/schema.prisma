@@ -52,12 +52,22 @@ model Video {
   @@map("videos")
 }
 
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @db.VarChar(255)
+  topics Topic[]
+
+  @@map("categories")
+}
+
 model Topic {
   id         Int    @id @default(autoincrement())
   topic_name String @db.VarChar(255)
+  categoryId Int
 
-  videos  Video[]
-  quizzes Quiz[]
+  Category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  videos   Video[]
+  quizzes  Quiz[]
 
   @@map("topics")
 }
