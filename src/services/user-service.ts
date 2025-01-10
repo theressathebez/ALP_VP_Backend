@@ -2,7 +2,7 @@ import { User } from "@prisma/client";
 import { Video } from "@prisma/client";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../errors/response-error";
-import { LoginUser, RegisterUser, toUserResponse, UserResponse } from "../models/user-model";
+import { ChangeUserResponse, LoginUser, RegisterUser, toChangeUserResponse, toUserResponse, UpdateUser, UserResponse } from "../models/user-model";
 import { UserValidation } from "../validations/user-validation";
 import { Validation } from "../validations/validation";
 import bcrypt from "bcrypt"
@@ -92,6 +92,48 @@ export class UserService {
             })
 
         return "Logout Successfully!"
+    }
+
+    static async updateUser(request: UpdateUser): Promise<ChangeUserResponse> {
+        const updateRequest = Validation.validate(
+            UserValidation.UPDATE, 
+            request)
+
+        updateRequest.password = await bcrypt.hash(
+            updateRequest.password,
+            10
+        )
+
+        const userUpdate = await prismaClient.user.update({
+            where: {
+                id: updateRequest.id
+            },
+            data: updateRequest
+        })
+
+        const response = toChangeUserResponse(userUpdate)
+
+        return response
+}
+
+    static async deleteUser(user: User): Promise<String> {
+        const users = await prismaClient.user.findFirst({
+            where: {
+                id: user.id
+            },
+        });
+
+        if (!users) {
+            throw new ResponseError(404, "User not found!!");
+        }
+
+        await prismaClient.user.delete({
+            where: {
+                id: user.id
+            }
+        })
+
+        return "Account deleted successfully!"
     }
 
     static async saveVideoToUser(userId: number, videoId: number): Promise<void> {
