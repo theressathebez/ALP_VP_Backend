@@ -48,7 +48,7 @@ export class UserController {
             const request = req.body as UpdateUser
             const response = await UserService.updateUser(request)
 
-            res.status(200).json({
+            res.status(201).json({
                 data: response
             })
         } catch (error) {

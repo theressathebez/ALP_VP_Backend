@@ -13,8 +13,8 @@ protectedRouter.post("/api/logout", UserController.logout)
 protectedRouter.post("/api/users/:userId/videos/:videoId", UserController.saveVideo);
 protectedRouter.get("/api/users/:userId/videos", UserController.getUserVideos)
 protectedRouter.delete("/api/users/:userId/videos/:videoId", UserController.deleteUserVideo);
-protectedRouter.put("/api/update/user", UserController.updateUser)
-protectedRouter.delete("/api/delete/user", UserController.deleteUser)
+protectedRouter.put("/api/update-user", UserController.updateUser)
+protectedRouter.delete("/api/delete-user", UserController.deleteUser)
 
 //study
 protectedRouter.post("/api/addTopic", StudyController.addTopic)

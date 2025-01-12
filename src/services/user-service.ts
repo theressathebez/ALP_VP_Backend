@@ -94,6 +94,22 @@ export class UserService {
         return "Logout Successfully!"
     }
 
+    static async checkUserIsEmpty(
+        userId: number
+    ): Promise<User> {
+        const user = await prismaClient.user.findUnique({
+            where: {
+                id: userId
+            },
+        })
+
+        if (!user) {
+            throw new ResponseError(400, "User not found!")
+        }
+
+        return user
+    }
+
     static async updateUser(request: UpdateUser): Promise<ChangeUserResponse> {
         const updateRequest = Validation.validate(
             UserValidation.UPDATE, 
@@ -117,14 +133,14 @@ export class UserService {
 }
 
     static async deleteUser(user: User): Promise<String> {
-        const users = await prismaClient.user.findFirst({
+        const users = await prismaClient.user.findUnique({
             where: {
                 id: user.id
             },
-        });
+        })
 
         if (!users) {
-            throw new ResponseError(404, "User not found!!");
+            throw new ResponseError(400, "User not found!")
         }
 
         await prismaClient.user.delete({

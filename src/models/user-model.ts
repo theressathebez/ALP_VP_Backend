@@ -13,8 +13,6 @@ export interface UserResponse {
 
 export interface UpdateUser {
     id: number
-    email: string
-    username: string
     password: string
 }
 
