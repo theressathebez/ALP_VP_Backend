@@ -55,7 +55,21 @@ export class StudyService {
         return toVideoResponse(video);
     }
 
+    static async getCategories(): Promise<CategoryResponse[]> {
+        const categories = await prismaClient.category.findMany();
+
+        const response = categories.map((category) => {
+            return {
+                id: category.id,
+                name: category.name
+            }
+        });
+
+        return response;
+    }
+
     static async getTopicsByCategory(categoryId: number): Promise<TopicResponse[]> {
+
         // Find topics related to the specified category
         const topics = await prismaClient.topic.findMany({
             where: {
@@ -64,12 +78,6 @@ export class StudyService {
         });
 
         return topics.map(toTopicResponse);
-    }
-
-    static async getCategories(): Promise<CategoryResponse[]> {
-        const categories = await prismaClient.category.findMany();
-
-        return categories.map(toCategoryResponse);
     }
 
     static async getVideosByTopic(topicId: number): Promise<VideoResponse[]> {
@@ -83,9 +91,12 @@ export class StudyService {
         return videos.map(toVideoResponse);
     }
 
+    
     static async getVideo(videoId: number): Promise<VideoResponse> {
         const video = await prismaClient.video.findUnique({
-            where: { id: videoId },
+            where: {
+                id: videoId
+            },
         });
 
         if (!video) {

@@ -33,7 +33,6 @@ export function toCategoryResponse(category: Category): CategoryResponse {
     };
 }
 
-
 export interface CreateVideoRequest {
     videoName: string;
     videoUrl: string;
@@ -46,7 +45,6 @@ export interface VideoResponse {
     videoName: string;
     videoUrl: string;
     flashcard: string;
-    topicId: number;
 }
 
 export function toVideoResponse(video: Video): VideoResponse {
@@ -55,6 +53,5 @@ export function toVideoResponse(video: Video): VideoResponse {
         videoName: video.video_name,
         videoUrl: video.video_url,
         flashcard: video.flashcard,
-        topicId: video.topic_id,
     };
 }

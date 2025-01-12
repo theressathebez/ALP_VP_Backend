@@ -3,6 +3,7 @@ import { CreateCategoryRequest, CreateTopicRequest, CreateVideoRequest, TopicRes
 import { StudyService } from "../services/study-service"
 import { ResponseError } from "../errors/response-error";
 
+//terima request dari client
 export class StudyController {
 
     static async createCategory(req: Request, res: Response, next: NextFunction) {
@@ -38,7 +39,10 @@ export class StudyController {
     static async getCategories(req: Request, res: Response, next: NextFunction) {
         try {
             const response = await StudyService.getCategories();
-            res.status(200).json(response);
+            //
+            res.status(200).json({
+                data: response
+            });
         } catch (error) {
             next(error); // Pass error to middleware
         }
