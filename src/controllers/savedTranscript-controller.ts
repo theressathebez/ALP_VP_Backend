@@ -8,23 +8,14 @@ import { UserRequest } from "../type/user-request";
 export class SavedTranscriptController {
     static async create(req: UserRequest, res: Response, next: NextFunction) {
         try {
-            const userId = req.body.user_id; // Use user_id from the request body
-
-            // Check if the user exists
-            const user = await prismaClient.user.findUnique({
-                where: { id: userId }
-            });
-
-            if (!user) {
-                throw new ResponseError(404, "User not found");
-            }
+            const userId = req.user?.id; // Use user id from authenticated user
 
             const request: CreateSavedTranscript = {
                 ...req.body,
                 user_id: userId
             };
             const response = await SavedTranscriptService.create(request);
-            res.status(201).json({ data: response, user: user });
+            res.status(201).json({ data: response });
         } catch (error) {
             next(error);
         }
