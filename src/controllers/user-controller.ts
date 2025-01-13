@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { LoginUser, RegisterUser, UserResponse } from "../models/user-model";
+import { LoginUser, RegisterUser, UpdateUser, UserResponse } from "../models/user-model";
 import { UserService } from "../services/user-service";
 import { UserRequest } from "../type/user-request";
+import { request } from "http";
 
 export class UserController {
     static async register(req: Request, res: Response, next: NextFunction) {
@@ -21,6 +22,43 @@ export class UserController {
         try {
             const request = req.body as LoginUser
             const response = await UserService.login(request)
+
+            res.status(200).json({
+                data: response
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+    
+    static async logout(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const response = await UserService.logout(req.user!)
+
+            res.status(200).json({
+                data: response
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async updateUser(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const request = req.body as UpdateUser
+            const response = await UserService.updateUser(request)
+
+            res.status(201).json({
+                data: response
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async deleteUser(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const response = await UserService.deleteUser(req.user!)
 
             res.status(200).json({
                 data: response
@@ -71,15 +109,4 @@ export class UserController {
         }
     }
 
-    static async logout(req: UserRequest, res: Response, next: NextFunction) {
-        try {
-            const response = await UserService.logout(req.user!)
-
-            res.status(200).json({
-                data: response
-            })
-        } catch (error) {
-            next(error)
-        }
-    }
 }

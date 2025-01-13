@@ -11,6 +11,15 @@ export interface UserResponse {
     username: string
 }
 
+export interface UpdateUser {
+    id: number
+    password: string
+}
+
+export interface ChangeUserResponse {
+    password: string
+}
+
 export interface LoginUser {
     email: string
     password: string
@@ -21,6 +30,11 @@ export function toUserResponse(prismaUser: User): UserResponse {
         token: prismaUser.token ?? "",
         username: prismaUser.username
     }
-    
+}
+
+export function toChangeUserResponse(prismaUser: User): ChangeUserResponse {
+    return {
+        password: prismaUser.password
+    }
 }
 
